@@ -38,9 +38,9 @@ public class PhotosUtils {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<List<Photo>>() {
                     @Override
-                    public void accept(List<Photo> attachments) {
-                        if (attachments != null && mLoadImageSuccess != null) {
-                            mLoadImageSuccess.onLoadImageSuccess(attachments);
+                    public void accept(List<Photo> photoList) {
+                        if (photoList != null && mLoadImageSuccess != null) {
+                            mLoadImageSuccess.onLoadImageSuccess(photoList);
                         }
                     }
                 }, new Consumer<Throwable>() {

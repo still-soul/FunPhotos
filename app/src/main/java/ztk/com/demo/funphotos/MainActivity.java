@@ -11,7 +11,11 @@ import ztk.com.demo.funphotos.utils.IntentUtils;
 import ztk.com.demo.funphotos.utils.PhotosUtils;
 
 import android.Manifest;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -29,13 +33,14 @@ public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadI
     private List<Photo> selectedPhotos = new ArrayList<>();
     private int selected;
     private TextView tvPreview,tvSure;
-
-
+    private PhotoObserver mPhotoObserver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initPermissions();
+        mPhotoObserver = new PhotoObserver(new Handler());
+        getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, mPhotoObserver);
         initView();
         setListener();
     }
@@ -75,6 +80,10 @@ public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadI
                 });
     }
 
+    /**
+     * 获取图库图片成功回调
+     * @param photos
+     */
     @Override
     public void onLoadImageSuccess(List<Photo> photos) {
         Log.e( "onLoadImageSuccess: ",photos.toString() );
@@ -82,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadI
 
     }
 
+    /**
+     * 图片选中/取消选中回调
+     * @param photoList
+     */
     @Override
     public void imageSelected(List<Photo> photoList) {
         selected = 0;
@@ -120,5 +133,32 @@ public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadI
                 .append("张");
 
         tvSure.setText(sb);
+    }
+
+    /**
+     * 检测本地相册有没有更新
+     */
+    class PhotoObserver extends ContentObserver {
+
+
+        public PhotoObserver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            photosUtils.getData();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getContentResolver().unregisterContentObserver(mPhotoObserver);
     }
 }

@@ -14,13 +14,19 @@ import java.util.List;
 import ztk.com.demo.funphotos.bean.Photo;
 
 public class LoadImagesUtils {
-    public static List<Photo> getSdCardImages(Context context, boolean isneedShowgif) {
+    /**
+     * 获取图库图片
+     * @param context
+     * @param isNeedShowGif
+     * @return
+     */
+    public static List<Photo> getSdCardImages(Context context, boolean isNeedShowGif) {
         Uri imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         ContentResolver resolver = context.getContentResolver();
-        String gifContent = isneedShowgif ? " or " + MediaStore.Images.Media.MIME_TYPE + "=?" : "";
+        String gifContent = isNeedShowGif ? " or " + MediaStore.Images.Media.MIME_TYPE + "=?" : "";
         String selection = MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?" + gifContent;
         String[] selectionArgs;
-        if (isneedShowgif) {
+        if (isNeedShowGif) {
             selectionArgs = new String[]{"image/jpeg", "image/png", "image/gif"};
         } else {
             selectionArgs = new String[]{"image/jpeg", "image/png"};
