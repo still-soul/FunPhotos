@@ -5,4 +5,5 @@
     <color name="colorAccent">#D81B60</color>
     <color name="CT1">#333333</color>
     <color name="CT3">#999999</color>
+    <color name="black">#ff000000</color>
 </resources>

@@ -10,6 +10,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * @author zhaotk
+ */
 public class IntentUtils {
 
     /**
@@ -28,16 +31,19 @@ public class IntentUtils {
 
         OSUtils.ROM romType = OSUtils.getRomType();
         switch (romType) {
-            case EMUI: // 华为
+            case EMUI:
+                // 华为
                 intent.putExtra("packageName", packageName);
                 intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.MainActivity"));
                 break;
-            case Flyme: // 魅族
+            case Flyme:
+                // 魅族
                 intent.setAction("com.meizu.safe.security.SHOW_APPSEC");
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
                 intent.putExtra("packageName", packageName);
                 break;
-            case MIUI: // 小米
+            case MIUI:
+                // 小米
                 String rom = getMiuiVersion();
                 if ("V6".equals(rom) || "V7".equals(rom)) {
                     intent.setAction("miui.intent.action.APP_PERM_EDITOR");
@@ -51,26 +57,32 @@ public class IntentUtils {
                     intent = getAppDetailsSettingsIntent(packageName);
                 }
                 break;
-            case Sony: // 索尼
+            case Sony:
+                // 索尼
                 intent.putExtra("packageName", packageName);
                 intent.setComponent(new ComponentName("com.sonymobile.cta", "com.sonymobile.cta.SomcCTAMainActivity"));
                 break;
-            case ColorOS: // OPPO
+            case ColorOS:
+                // OPPO
                 intent.putExtra("packageName", packageName);
                 intent.setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.PermissionManagerActivity"));
                 break;
-            case EUI: // 乐视
+            case EUI:
+                // 乐视
                 intent.putExtra("packageName", packageName);
                 intent.setComponent(new ComponentName("com.letv.android.letvsafe", "com.letv.android.letvsafe.PermissionAndApps"));
                 break;
-            case LG: // LG
+            case LG:
+                // LG
                 intent.setAction("android.intent.action.MAIN");
                 intent.putExtra("packageName", packageName);
                 ComponentName comp = new ComponentName("com.android.settings", "com.android.settings.Settings$AccessLockSummaryActivity");
                 intent.setComponent(comp);
                 break;
-            case SamSung: // 三星
-            case SmartisanOS: // 锤子
+            case SamSung:
+                // 三星
+            case SmartisanOS:
+                // 锤子
                 gotoAppDetailSetting(context, packageName);
                 break;
             default:

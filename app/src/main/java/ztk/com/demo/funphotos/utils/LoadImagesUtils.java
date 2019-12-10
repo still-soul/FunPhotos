@@ -13,6 +13,9 @@ import java.util.List;
 
 import ztk.com.demo.funphotos.bean.Photo;
 
+/**
+ * @author zhaotk
+ */
 public class LoadImagesUtils {
     /**
      * 获取图库图片

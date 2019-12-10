@@ -12,7 +12,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ztk.com.demo.funphotos.bean.Photo;
+import ztk.com.demo.funphotos.interfaces.LoadImageSuccess;
 
+/**
+ * @author zhaotk
+ */
 public class PhotosUtils {
     private static final String TAG = "loadImages";
     private LoadImageSuccess mLoadImageSuccess;
@@ -25,9 +29,7 @@ public class PhotosUtils {
     public void setLoadImageSuccess(LoadImageSuccess loadImageSuccess) {
         this.mLoadImageSuccess = loadImageSuccess;
     }
-    public interface LoadImageSuccess {
-        void onLoadImageSuccess(List<Photo> attachments);
-    }
+
     public void getData(){
         Observable.create(new ObservableOnSubscribe<List<Photo>>() {
             @Override

@@ -1,10 +1,12 @@
 package ztk.com.demo.funphotos.utils;
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.TextUtils;
+
 /**
- * @author Administrator
+ * @author zhaotk
  */
-public class PublicMethod {
+public class PublicUtils {
 
     /**
      * dip to px
@@ -43,6 +45,19 @@ public class PublicMethod {
         }
 
         return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
+    public static boolean isGif(String url){
+        if(!TextUtils.isEmpty(url)){
+            url = url.toLowerCase();
+            if(url.endsWith("gif")){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return false;
+
     }
 
 

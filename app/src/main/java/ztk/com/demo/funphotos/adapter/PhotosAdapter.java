@@ -5,8 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -18,27 +16,28 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ztk.com.demo.funphotos.R;
 import ztk.com.demo.funphotos.bean.Photo;
-import ztk.com.demo.funphotos.utils.PublicMethod;
+import ztk.com.demo.funphotos.interfaces.ScrollChanged;
+import ztk.com.demo.funphotos.interfaces.SelectImageWatcher;
+import ztk.com.demo.funphotos.utils.PublicUtils;
 import ztk.com.demo.funphotos.view.SelectImageView;
 
+/**
+ * @author zhaotk
+ */
 public class PhotosAdapter extends  RecyclerView.Adapter<PhotosAdapter.PhotoListHolder>{
     private List<Photo> photoList = new ArrayList<>();
     private Context mContext;
     private int mScreenWidth;
-    private selectImageWatcher selectImageWatcher;
+    private SelectImageWatcher selectImageWatcher;
 
-    public interface selectImageWatcher{
-        void imageSelected(List<Photo> photoList);
-    }
-
-    public void setSelectImageWatcher(selectImageWatcher selectImageWatcher){
+    public void setSelectImageWatcher(SelectImageWatcher selectImageWatcher){
         this.selectImageWatcher = selectImageWatcher;
 
     }
 
     public PhotosAdapter(Context context) {
         this.mContext = context;
-        mScreenWidth = PublicMethod.getScreenWidth(mContext, PublicMethod.dip2px(4)) / 3;
+        mScreenWidth = PublicUtils.getScreenWidth(mContext, PublicUtils.dip2px(4)) / 3;
     }
 
     public void setPhotos(List<Photo> photos){
@@ -56,48 +55,55 @@ public class PhotosAdapter extends  RecyclerView.Adapter<PhotosAdapter.PhotoList
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final PhotoListHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final PhotoListHolder holder, final int position) {
         final Photo photo = photoList.get(position);
-
+        if (photo.isCheck()){
+            holder.checkBox.setChecked(true);
+        }else {
+            holder.checkBox.setChecked(false);
+        }
         RequestOptions requestOptions = new RequestOptions()
                 .placeholder(R.mipmap.empty)
                 .centerCrop()
                 .override(mScreenWidth , mScreenWidth);
         Glide.with(mContext).load(photo.getMediaPath()).apply(requestOptions).into(holder.ivPhoto);
-        holder.ivPhoto.setScrollChanged(new SelectImageView.ScrollChanged() {
+        holder.ivPhoto.setScrollChanged(new ScrollChanged() {
             @Override
             public void onScrollRightChanged() {
-                if (!holder.checkBox.isChecked()){
-                    holder.checkBox.setChecked(true);
+                if (!photo.isCheck()){
+                    photo.setCheck(true);
+                    if (selectImageWatcher != null) {
+                        selectImageWatcher.imageSelected(position, photo);
+                    }
                 }
             }
 
             @Override
             public void onScrollLeftChanged() {
-                if (holder.checkBox.isChecked()){
-                    holder.checkBox.setChecked(false);
-
+                if (photo.isCheck()){
+                    photo.setCheck(false);
+                    if (selectImageWatcher != null) {
+                        selectImageWatcher.imageSelected(position, photo);
+                    }
                 }
             }
         });
 
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
+            public void onClick(View view) {
+                if (holder.checkBox.isChecked()){
                     photo.setCheck(true);
                 }else {
                     photo.setCheck(false);
                 }
-                if (selectImageWatcher != null){
-                    selectImageWatcher.imageSelected(photoList);
+                if (selectImageWatcher != null) {
+                    selectImageWatcher.imageSelected(position, photo);
                 }
             }
         });
 
     }
-
-
 
     @Override
     public int getItemCount() {

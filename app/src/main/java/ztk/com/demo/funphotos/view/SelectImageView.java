@@ -6,9 +6,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.appcompat.widget.AppCompatImageView;
-import ztk.com.demo.funphotos.utils.PublicMethod;
+import ztk.com.demo.funphotos.interfaces.ScrollChanged;
+import ztk.com.demo.funphotos.utils.PublicUtils;
 
 
+/**
+ * @author zhaotk
+ */
 public class SelectImageView extends AppCompatImageView {
     /**
      * 按下时 的X坐标
@@ -23,11 +27,6 @@ public class SelectImageView extends AppCompatImageView {
     public void setScrollChanged(ScrollChanged scrollChanged) {
         this.scrollChanged = scrollChanged;
     }
-    public interface ScrollChanged {
-        void onScrollRightChanged();
-        void onScrollLeftChanged();
-    }
-
 
     public SelectImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -45,14 +44,14 @@ public class SelectImageView extends AppCompatImageView {
                 return true;
             case MotionEvent.ACTION_UP:
                 upX = x;
-                if ((upX - downX > PublicMethod.dip2px( 1))) {
+                if ((upX - downX > PublicUtils.dip2px( 1))) {
                     Log.e( "onTouchEvent: ","向右滑动" );
                     if (scrollChanged != null) {
                         scrollChanged.onScrollRightChanged();
                     }
                 }
 
-                if ((downX - upX > PublicMethod.dip2px( 1))) {
+                if ((downX - upX > PublicUtils.dip2px( 1))) {
                     Log.e( "onTouchEvent: ","向左滑动" );
                     if (scrollChanged != null) {
                         scrollChanged.onScrollLeftChanged();

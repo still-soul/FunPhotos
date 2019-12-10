@@ -1,12 +1,15 @@
-package ztk.com.demo.funphotos;
+package ztk.com.demo.funphotos.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.functions.Consumer;
+import ztk.com.demo.funphotos.R;
 import ztk.com.demo.funphotos.adapter.PhotosAdapter;
 import ztk.com.demo.funphotos.bean.Photo;
+import ztk.com.demo.funphotos.interfaces.LoadImageSuccess;
+import ztk.com.demo.funphotos.interfaces.SelectImageWatcher;
 import ztk.com.demo.funphotos.utils.IntentUtils;
 import ztk.com.demo.funphotos.utils.PhotosUtils;
 
@@ -24,11 +27,15 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
-public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadImageSuccess,
-        PhotosAdapter.selectImageWatcher, View.OnClickListener {
-    private RxPermissions rxPermissions;
+
+import static ztk.com.demo.funphotos.Const.PREVIEW_ID;
+
+/**
+ * @author zhaotk
+ */
+public class MainActivity extends AppCompatActivity implements LoadImageSuccess,
+        SelectImageWatcher, View.OnClickListener {
     private PhotosUtils photosUtils;
-    private RecyclerView recyclerView;
     private PhotosAdapter photosAdapter;
     private List<Photo> selectedPhotos = new ArrayList<>();
     private int selected;
@@ -39,10 +46,14 @@ public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initPermissions();
-        mPhotoObserver = new PhotoObserver(new Handler());
-        getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, mPhotoObserver);
+        addObserver();
         initView();
         setListener();
+    }
+
+    private void addObserver() {
+        mPhotoObserver = new PhotoObserver(new Handler());
+        getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, true, mPhotoObserver);
     }
 
     private void setListener() {
@@ -54,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadI
     private void initView() {
         tvPreview = findViewById(R.id.preview);
         tvSure = findViewById(R.id.sure);
-        recyclerView = findViewById(R.id.photo_recycler);
+        RecyclerView recyclerView = findViewById(R.id.photo_recycler);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(gridLayoutManager);
         photosAdapter = new PhotosAdapter(this);
@@ -62,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadI
     }
 
     private void initPermissions() {
-        rxPermissions = new RxPermissions(this);
+        RxPermissions rxPermissions = new RxPermissions(this);
         photosUtils = new PhotosUtils(this);
 
         rxPermissions.request(
@@ -93,24 +104,34 @@ public class MainActivity extends AppCompatActivity implements PhotosUtils.LoadI
 
     /**
      * 图片选中/取消选中回调
-     * @param photoList
+     * @param position
+     * @param photo
      */
     @Override
-    public void imageSelected(List<Photo> photoList) {
-        selected = 0;
-        for (int i = 0; i < photoList.size();i++){
-            Photo photo = photoList.get(i);
-            if (photo.isCheck()){
-                selected++;
-                selectedPhotos.add(photo);
+    public void imageSelected(int position, Photo photo) {
+        if (photo.isCheck()) {
+            selected++;
+            selectedPhotos.add(photo);
+        } else {
+            selected--;
+            for (int i = 0; i < selectedPhotos.size(); i++) {
+                if (selectedPhotos.get(i).getMediaPath().equals(photo.getMediaPath())) {
+                    selectedPhotos.remove(i);
+                    break;
+                }
             }
         }
+
+        photosAdapter.notifyItemChanged(position);
         setSureNum();
 
     }
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == R.id.preview){
+            PreviewActivity.start(this,selectedPhotos,PREVIEW_ID);
+        }
 
     }
 
