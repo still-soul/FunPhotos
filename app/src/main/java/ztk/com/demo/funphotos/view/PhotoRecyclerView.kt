@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
+import android.view.ViewConfiguration
 import androidx.recyclerview.widget.RecyclerView
 import ztk.com.demo.funphotos.interfaces.ScrollLeftOrRightListener
 import kotlin.math.abs
@@ -19,11 +20,19 @@ class PhotoRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(c
      */
     private var moveX: Float = 0f
     private var moveY: Float = 0f
+    /**
+     * 滑动的最小距离
+     */
+    private var mTouchSlop: Int = 8
     private var mScrollLeftOrRightListener: ScrollLeftOrRightListener? = null
     private var points = ArrayList<Int>()
 
     fun setScrollLeftOrRightListener(mScrollLeftOrRightListener: ScrollLeftOrRightListener) {
         this.mScrollLeftOrRightListener = mScrollLeftOrRightListener
+    }
+
+    init{
+        mTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -42,8 +51,8 @@ class PhotoRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(c
                     val position = getChildAdapterPosition(view)
                     Log.e("TAG", "position=$position")
                     points.add(position)
-                    Log.e("TAG", "orientation=${event.orientation}")
-                    if (abs(moveX - downX) > abs(moveY - downY) && abs(moveX - downX) > 0) {
+                    Log.e("TAG", "=${ViewConfiguration.get(context).scaledTouchSlop}")
+                    if (abs(moveX - downX) > abs(moveY - downY) && abs(moveX - downX) > mTouchSlop) {
                         mScrollLeftOrRightListener?.let {
                             mScrollLeftOrRightListener?.onScrollChanged(position)
                         }
