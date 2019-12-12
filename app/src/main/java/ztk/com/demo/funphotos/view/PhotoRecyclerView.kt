@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
 import ztk.com.demo.funphotos.interfaces.ScrollLeftOrRightListener
-import ztk.com.demo.funphotos.utils.PublicUtils
 import kotlin.math.abs
 
 class PhotoRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(context, attrs) {
@@ -20,41 +19,36 @@ class PhotoRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(c
      */
     private var moveX: Float = 0f
     private var moveY: Float = 0f
-    private var mScrollLeftOrRightListener : ScrollLeftOrRightListener? = null
+    private var mScrollLeftOrRightListener: ScrollLeftOrRightListener? = null
     private var points = ArrayList<Int>()
 
-     fun setScrollLeftOrRightListener(mScrollLeftOrRightListener: ScrollLeftOrRightListener){
-       this.mScrollLeftOrRightListener = mScrollLeftOrRightListener
+    fun setScrollLeftOrRightListener(mScrollLeftOrRightListener: ScrollLeftOrRightListener) {
+        this.mScrollLeftOrRightListener = mScrollLeftOrRightListener
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        when(event?.action){
+        when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
-                    downX = event.x
-                    downY = event.y
-                    Log.e("TAG", "downX=${event.x}")
-                    Log.e("TAG", "downY=${event.y}")
-                    points.clear()
+                downX = event.x
+                downY = event.y
+                points.clear()
             }
-            MotionEvent.ACTION_MOVE ->{
-                    moveX = event.x
-                    moveY = event.y
+            MotionEvent.ACTION_MOVE -> {
+                moveX = event.x
+                moveY = event.y
 
-                    Log.e("TAG", "moveX=${event.x}")
-                    Log.e("TAG", "moveY=${event.y}")
-
-                    val view = findChildViewUnder(event.x, event.y)
-                    if(view != null && !points.contains(getChildAdapterPosition(view))){
-                        val position =  getChildAdapterPosition(view)
-                        Log.e("TAG", "position=$position")
-                        points.add(position)
-                        Log.e("TAG", "orientation=${event.orientation}")
-                        if (abs(moveX - downX) > PublicUtils.dip2px(1f) && abs(moveY-downY) < 20f) {
-                            mScrollLeftOrRightListener?.let {
-                                mScrollLeftOrRightListener?.onScrollChanged(position)
-                            }
+                val view = findChildViewUnder(event.x, event.y)
+                if (view != null && !points.contains(getChildAdapterPosition(view))) {
+                    val position = getChildAdapterPosition(view)
+                    Log.e("TAG", "position=$position")
+                    points.add(position)
+                    Log.e("TAG", "orientation=${event.orientation}")
+                    if (abs(moveX - downX) > abs(moveY - downY) && abs(moveX - downX) > 0) {
+                        mScrollLeftOrRightListener?.let {
+                            mScrollLeftOrRightListener?.onScrollChanged(position)
                         }
                     }
+                }
 
             }
             MotionEvent.ACTION_UP -> {

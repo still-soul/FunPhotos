@@ -70,7 +70,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public void onPageSelected(int arg0) {
-                setSeleced(arg0);
+                setSelected(arg0);
             }
 
             @Override
@@ -88,7 +88,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
         smallPhotosAdapter.setPhotos(photoList);
         smallPhotosAdapter.setOnItemClickListener(this);
 
-        setSeleced(0);
+        setSelected(0);
         ivBack.setOnClickListener(this);
     }
 
@@ -101,12 +101,12 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onItemClick(int position) {
-        setSeleced(position);
+        setSelected(position);
 
 
     }
 
-    private void setSeleced(int position) {
+    private void setSelected(int position) {
         viewPager.setCurrentItem(position);
         tvNum.setText(String.format("%s/%s", position + 1, photoList.size()));
         for (int i = 0; i < photoList.size(); i ++){
@@ -116,6 +116,7 @@ public class PreviewActivity extends AppCompatActivity implements View.OnClickLi
                 photoList.get(i).setSmallCheck(false);
             }
         }
+        recyclerView.scrollToPosition(position);
         smallPhotosAdapter.notifyDataSetChanged();
     }
 }
