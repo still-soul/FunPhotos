@@ -1,5 +1,6 @@
 package ztk.com.demo.funphotos.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -20,6 +21,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -164,11 +167,6 @@ public class MainActivity extends AppCompatActivity implements LoadImageSuccess,
 
         public PhotoObserver(Handler handler) {
             super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-
         }
 
         @Override
