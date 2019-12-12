@@ -7,8 +7,6 @@ import android.view.MotionEvent;
 
 import androidx.appcompat.widget.AppCompatImageView;
 import ztk.com.demo.funphotos.interfaces.ScrollChanged;
-import ztk.com.demo.funphotos.utils.PublicUtils;
-
 
 /**
  * @author zhaotk
@@ -19,9 +17,9 @@ public class SelectImageView extends AppCompatImageView {
      */
     private float downX;
     /**
-     * 抬起时 的X坐标
+     * 移动时 的X坐标
      */
-    private float upX;
+    private float moveX;
     private ScrollChanged scrollChanged;
 
     public void setScrollChanged(ScrollChanged scrollChanged) {
@@ -34,30 +32,27 @@ public class SelectImageView extends AppCompatImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //获取当前坐标
-        float x = event.getX();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                downX = x;
+                downX = event.getX();
                 return true;
             case MotionEvent.ACTION_MOVE:
-                return true;
-            case MotionEvent.ACTION_UP:
-                upX = x;
-                if ((upX - downX > PublicUtils.dip2px( 1))) {
+                moveX = event.getX();
+                if ((moveX - downX > 0)) {
                     Log.e( "onTouchEvent: ","向右滑动" );
                     if (scrollChanged != null) {
                         scrollChanged.onScrollRightChanged();
                     }
                 }
 
-                if ((downX - upX > PublicUtils.dip2px( 1))) {
+                if ((downX - moveX > 0)) {
                     Log.e( "onTouchEvent: ","向左滑动" );
                     if (scrollChanged != null) {
                         scrollChanged.onScrollLeftChanged();
                     }
                 }
-
+                return true;
+            case MotionEvent.ACTION_UP:
               return true;
             default:
                 break;
